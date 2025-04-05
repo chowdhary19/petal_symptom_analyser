@@ -144,6 +144,33 @@ async def check_models():
         "current_directory": os.getcwd()
     }
 
+@app.get("/test_load_model")
+async def test_load_model():
+    import os
+    try:
+        file_path = 'model.pkl'
+        file_size = os.path.getsize(file_path)
+        
+        # Try loading with error details
+        import traceback
+        try:
+            import joblib
+            model = joblib.load(file_path)
+            return {
+                "success": True,
+                "file_size_bytes": file_size,
+                "model_type": str(type(model))
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "traceback": traceback.format_exc(),
+                "file_size_bytes": file_size
+            }
+    except Exception as e:
+        return {"error": f"Initial file check failed: {str(e)}"}
+
 @app.get("/environment_info")
 async def environment_info():
     import sys
