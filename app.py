@@ -144,6 +144,26 @@ async def check_models():
         "current_directory": os.getcwd()
     }
 
+@app.get("/environment_info")
+async def environment_info():
+    import sys
+    import sklearn
+    import joblib
+    import numpy
+    import pandas
+    import xgboost
+    import pickle
+    
+    return {
+        "python_version": sys.version,
+        "sklearn_version": sklearn.__version__,
+        "joblib_version": joblib.__version__,
+        "numpy_version": numpy.__version__,
+        "pandas_version": pandas.__version__,
+        "xgboost_version": xgboost.__version__,
+        "pickle_protocol": pickle.HIGHEST_PROTOCOL
+    }
+
 # Health check endpoint
 @app.get("/health")
 async def health_check():
