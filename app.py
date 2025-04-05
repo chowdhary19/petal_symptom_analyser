@@ -24,7 +24,10 @@ try:
     disease_prediction_encoder = joblib.load('disease_prediction_encoder.pkl')
     print("Models loaded successfully")
 except Exception as e:
+    import os
     print(f"Error loading models: {e}")
+    print(f"Current directory: {os.getcwd()}")
+    print(f"Files in current directory: {os.listdir('.')}")
 
 # Define request model
 class PredictionRequest(BaseModel):
@@ -117,7 +120,10 @@ async def predict(request: PredictionRequest):
         
         return response
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_detail = f"Error: {str(e)}\n{traceback.format_exc()}"
+        print(error_detail) 
+        raise HTTPException(status_code=500, detail=error_detail)
 
 # Root endpoint
 @app.get("/")
@@ -125,6 +131,17 @@ async def root():
     return {
         "message": "Veterinary Disease Predictor API",
         "usage": "Send POST request to /predict endpoint with animal details"
+    }
+
+@app.get("/models")
+async def check_models():
+    import os
+    files = os.listdir('.')
+    pkl_files = [f for f in files if f.endswith('.pkl')]
+    return {
+        "available_files": files,
+        "pkl_files": pkl_files,
+        "current_directory": os.getcwd()
     }
 
 # Health check endpoint
